@@ -1,3 +1,3 @@
 
 
-For the sake of simplicity, we are using SQLite for the database
+<!-- For the sake of simplicity, we are using SQLite for the database -->
