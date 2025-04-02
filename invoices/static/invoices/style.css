@@ -1,20 +1,18 @@
-* {
-	font-family: 'JetBrains Mono', monospace;
-}
-
 body {
 	background-color: #212121;
 }
 
-h1 {
-	color: #1DB954;
-	text-align: center;
-}
-
-.invoices_table {
+.window {
+	margin-top: 8%;
+	width: 50%;
 	margin-left: auto;
 	margin-right: auto;
-	color: #B3B3B3;
-	background-color: #212121;
-	width: 90%;
+}
+
+.title-bar-text {
+	font-size: 30px;
+}
+
+.window-body {
+	font-size: 20px;
 }
