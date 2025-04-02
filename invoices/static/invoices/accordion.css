@@ -1,8 +1,11 @@
 
 .accordion-wrapper {
 	display: block;
+}
+
+.first-accordion-wrapper {
+	display: block;
 	box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
-	width: 70%;
 	margin: 0 auto;
 	margin-top: 12px;
 	margin-bottom: 12px;
@@ -20,7 +23,7 @@
 
 .accordion ~ .title strong {
 	line-height: 24px;
-	color: white;
+	color: #B3B3B3;
 }
 
 .accordion ~ .title .side-icon {
@@ -41,7 +44,6 @@
 
 .accordion ~ .content {
 	display: none;
-	padding: 8px;
 	cursor: pointer;
 }
 
