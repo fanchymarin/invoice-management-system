@@ -16,36 +16,32 @@
 		<button type="submit">Filter</button>
 	</form>
 
-	<table border="1">
+	<table border="1" align="center" style="width: 70%;">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Adjusted Gross Value</th>
-				<th>Discount Percentage</th>
-				<th>Daily Advance Fee</th>
-				<th>Advance Duration</th>
-				<th>Customer Name</th>
-				<th>Customer ID</th>
-				<th>Revenue Source ID</th>
-				<th>Revenue Source Name</th>
-				<th>Currency Code</th>
-				<th>Invoice Date</th>
+				<th>Customer</th>
+				<th>Year</th>
+				<th>Month</th>
+				<th>Revenue source</th>
+				<th>Invoice amount</th>
+				<th>Haircut percent</th>
+				<th>Daily advance fee</th>
+				<th>Advance duration</th>
+				<th>Invoice date</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for invoice in invoices %}
 			<tr>
-				<td>{{ invoice.id }}</td>
-				<td>{{ invoice.adjusted_gross_value }}</td>
-				<td>{{ invoice.haircut_percent }}</td>
-				<td>{{ invoice.daily_advance_fee }}</td>
-				<td>{{ invoice.advance_duration }}</td>
 				<td>{{ invoice.customer_name }}</td>
-				<td>{{ invoice.customer_id }}</td>
-				<td>{{ invoice.revenue_source_id }}</td>
+				<td style="text-align: right;">{{ invoice.invoice_date|date:"Y" }}</td>
+				<td style="text-align: right;">{{ invoice.invoice_date|date:"F" }}</td>
 				<td>{{ invoice.revenue_source_name }}</td>
-				<td>{{ invoice.currency_code }}</td>
-				<td>{{ invoice.invoice_date }}</td>
+				<td style="text-align: right;">{{ invoice.adjusted_gross_value }} {{ invoice.currency_code }}</td>
+				<td style="text-align: right;">{{ invoice.haircut_percent }}</td>
+				<td style="text-align: right;">{{ invoice.daily_advance_fee }}</td>
+				<td style="text-align: right;">{{ invoice.advance_duration }} days</td>
+				<td style="text-align: right;">{{ invoice.invoice_date }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
