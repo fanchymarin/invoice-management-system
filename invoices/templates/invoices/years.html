@@ -12,16 +12,17 @@
   <div class="window" >
     <div class="title-bar">
       <div class="title-bar-text">
-        Invoices
+        Invoices\{{ invoices_info.0.customer_name }}
       </div>
     </div>
     <div class="window-body">
       {% for invoice_info in invoices_info %}
-        <a href="?customer_id={{ invoice_info.customer_id }}" >
-          {{ invoice_info.customer_name }}
+        <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}" >
+          {{ invoice_info.year }}
         </a>
         <br>
       {% endfor %}
+      
     </div>
   </div>
 </body>

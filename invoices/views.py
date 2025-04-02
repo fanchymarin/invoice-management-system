@@ -4,25 +4,28 @@ from django.db.models.functions import ExtractYear, ExtractMonth
 from .models import Invoice
 from django.http import JsonResponse
 
-def invoice_list(request):
+def get_invoices_info(request):
 
-    invoices = Invoice.objects.values(
-        'customer_name', 
-        'revenue_source_name',
-        'currency_code',
-        'adjusted_gross_value',
-        'haircut_percent',
-        'daily_advance_fee',
-        'advance_duration',
-        'invoice_date'
-    ).order_by('customer_name', '-invoice_date', 'revenue_source_name')
+    customer_id_query = request.GET.get('customer_id', None)
+    year_query = request.GET.get('year', None)
+    month_query = request.GET.get('month', None)
 
-    customer_name = request.GET.get('customer_name', None)
-    if customer_name:
-        invoices = invoices.filter(customer_name__icontains=customer_name)
+    invoices_info = Invoice.objects.values(
+        'customer_name',
+        'customer_id'
+        )
+    
+    if customer_id_query:
+        invoices_info = invoices_info.filter(customer_id=customer_id_query).annotate(
+            year=ExtractYear('invoice_date')
+        ).order_by('-invoice_date')
+        render_html = "invoices/years.html"
+
     else:
-        invoices = invoices.all()
+        invoices_info = invoices_info.order_by('customer_name').distinct()
+        render_html = "invoices/index.html"
+
 
     if request.headers.get('Accept') == 'application/json':
-        return JsonResponse(list(invoices), safe=False)
-    return render(request, 'invoices/index.html', {'invoices': invoices})
+        return JsonResponse(list(invoices_info), safe=False)
+    return render(request, render_html, {'invoices_info': invoices_info})
