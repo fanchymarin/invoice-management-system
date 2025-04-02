@@ -25,4 +25,4 @@ def invoice_list(request):
 
     if request.headers.get('Accept') == 'application/json':
         return JsonResponse(list(invoices), safe=False)
-    return render(request, 'invoice_list.html', {'invoices': invoices})
+    return render(request, 'invoices/index.html', {'invoices': invoices})

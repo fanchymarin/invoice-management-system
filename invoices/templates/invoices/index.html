@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'invoices/style.css' %}">
+  <link rel="stylesheet" href="{% static 'invoices/accordion.css' %}">
+	<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+	</style>
+	<title>Revving - Invoices</title>
+</head>
+<body>
+	<h1>Invoices</h1>
+
+	<!-- <form method="get">
+		<label for="customer_name">Filter by customer name:</label>
+		<input type="text" id="customer_name" name="customer_name" value="{{ customer_name }}">
+		<button type="submit">Filter</button>
+	</form> -->
+
+  {% for invoice in invoices %}
+	<label class="accordion-wrapper">
+		<input type="checkbox" class="accordion" hidden />
+		<div class="title">
+      <strong>{{ invoice.customer_name }}</strong>
+			<svg viewBox="0 0 256 512" width="12" title="angle-right" class="side-icon" fill="white"></svg>
+				<path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z" />
+			</svg>
+			<svg viewBox="0 0 320 512" height="24" title="angle-down" class="down-icon" fill="white"></svg>
+				<path d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z" />
+			</svg>
+		</div>
+		<div class="content">
+			<table class="invoices_table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Year</th>
+            <th>Month</th>
+            <th>Revenue source</th>
+            <th>Invoice amount</th>
+            <th>Haircut percent</th>
+            <th>Daily advance fee</th>
+            <th>Advance duration</th>
+            <th>Invoice date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ invoice.customer_name }}</td>
+            <td style="text-align: right;">{{ invoice.invoice_date|date:"Y" }}</td>
+            <td style="text-align: right;">{{ invoice.invoice_date|date:"F" }}</td>
+            <td>{{ invoice.revenue_source_name }}</td>
+            <td style="text-align: right;">{{ invoice.adjusted_gross_value }} {{ invoice.currency_code }}</td>
+            <td style="text-align: right;">{{ invoice.haircut_percent }}</td>
+            <td style="text-align: right;">{{ invoice.daily_advance_fee }}</td>
+            <td style="text-align: right;">{{ invoice.advance_duration }} days</td>
+            <td style="text-align: right;">{{ invoice.invoice_date }}</td>
+          </tr>
+        </tbody>
+      </table>
+		</div>
+	</label>
+  {% endfor %}
+
+	
+</body>
+</html>
