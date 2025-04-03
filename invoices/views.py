@@ -1,9 +1,8 @@
 from django.db.models import Case, CharField, Count, DecimalField, JSONField, Sum, Value, When
-from django.db.models.functions import Coalesce, ExtractDay, ExtractMonth, ExtractYear
+from django.db.models.functions import Coalesce, ExtractMonth, ExtractYear
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Invoice
-from django.http import Http404
 
 context = {
     'invoices_info': None,
@@ -48,29 +47,59 @@ def get_invoices_month(invoices_info, year_query):
     context['selected_year'] = invoices_info.values_list('year', flat=True).first()
     return invoices_info
 
+def unify_invoice_sources(data):
+    result = []
+    
+    for invoice_info in data:
+        unified_sources = {}
+        
+        for source in invoice_info["invoice_sources"]:
+            key = (source["revenue_source_name"], source["currency_code"])
+            
+            if key in unified_sources:
+                unified_sources[key]["total_adjusted_gross_value"] += source["total_adjusted_gross_value"]
+                unified_sources[key]["invoice_count"] += 1
+            else:
+                unified_sources[key] = {
+                    "revenue_source_name": source["revenue_source_name"],
+                    "currency_code": source["currency_code"],
+                    "total_adjusted_gross_value": source["total_adjusted_gross_value"],
+                    "invoice_count": 1
+                }
+        
+        unified_list = list(unified_sources.values())
+        unified_list.sort(key=lambda x: x["total_adjusted_gross_value"], reverse=True)
+        
+        new_invoice_info = invoice_info.copy()
+        new_invoice_info["invoice_sources"] = unified_list
+        
+        result.append(new_invoice_info)
+    
+    return result
+
+
 def get_invoices_info(invoices_info, month_query):
     context['view_type'] = 'invoice_info'
-
     invoices_info = invoices_info.filter(month_id=month_query)
 
     total_amount_by_source_revenue = (
         invoices_info
         .values('revenue_source_name', 'currency_code')
         .annotate(
-            day=ExtractDay('invoice_date'),
             total_adjusted_gross_value=Coalesce(
                 Sum('adjusted_gross_value'), 0, output_field=DecimalField()))
-        .order_by('-invoice_date')
+        .order_by('-adjusted_gross_value')
     )
 
     for entry in total_amount_by_source_revenue:
         entry['total_adjusted_gross_value'] = float(round(entry['total_adjusted_gross_value'], 2))
+
         invoices_info = invoices_info.annotate(
             invoice_sources=Value(list(total_amount_by_source_revenue), output_field=JSONField())
         )
 
     context['selected_month'] = invoices_info.values_list('month_name', flat=True).first()
-    return invoices_info
+    return unify_invoice_sources(invoices_info)
 
 
 def get_customers(request):

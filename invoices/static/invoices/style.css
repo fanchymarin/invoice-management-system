@@ -10,18 +10,39 @@ body {
 }
 
 .title-bar-text {
-	font-size: 30px;
+	font-size: x-large;
 }
 
 .window-body {
-	font-size: 20px;
+	font-size: large;
 }
 
 .invoices-count {
 	float: inline-end;
-	font-size: 15px;
+	font-size: medium;
 }
 
 .invoices-info {
-	margin-top: 10px;
+	font-size: large;
+	font-weight: bold;
 }
+
+.invoices-info-box {
+	font-size: medium;
+	font-weight: normal;
+}
+
+/*   
+	"customer_name": "EagleFiesta",
+    "customer_id": 1,
+    "year": 2024,
+    "total_invoices": 25,
+    "month_id": 12,
+    "month_name": "December",
+    "invoice_sources": [
+      {
+        "revenue_source_name": "GizmoGuru",
+        "currency_code": "GBP",
+        "total_adjusted_gross_value": 122048.0
+      },
+ */
