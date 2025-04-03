@@ -12,10 +12,12 @@
   <div class="window">
     <div class="title-bar">
       <div class="title-bar-text">
-        {% if view_type == "years" %}
-          Invoices\{{ selected_customer }}
-        {% else %}
+        {% if view_type == "customers" %}
           Invoices
+        {% elif view_type == "years" %}
+          Invoices\{{ selected_customer }}
+        {% elif view_type == "months" %}
+        Invoices\{{ selected_customer }}\{{ selected_year }}
         {% endif %}
       </div>
     </div>
@@ -29,6 +31,10 @@
           <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}">
             {{ invoice_info.year }}
           </a>
+        {% elif view_type == "months" %}
+          <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}&month={{ invoice_info.month }}">
+            {{ invoice_info.month }}
+          </a>  
         {% endif %}
         <br>
       {% endfor %}
