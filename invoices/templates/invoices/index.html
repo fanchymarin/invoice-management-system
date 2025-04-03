@@ -18,6 +18,8 @@
           Invoices\{{ selected_customer }}
         {% elif view_type == "months" %}
         Invoices\{{ selected_customer }}\{{ selected_year }}
+        {% elif view_type == "invoice_info" %}
+          Invoices\{{ selected_customer }}\{{ selected_year }}\{{ selected_month }}
         {% endif %}
       </div>
     </div>
@@ -28,13 +30,24 @@
             {{ invoice_info.customer_name }}
           </a>
         {% elif view_type == "years" %}
-          <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}">
+            <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}">
             {{ invoice_info.year }}
-          </a>
+            </a>
+            <span class="invoices-count">Total invoices: {{ invoice_info.total_invoices }}</span>
         {% elif view_type == "months" %}
-          <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}&month={{ invoice_info.month }}">
-            {{ invoice_info.month }}
-          </a>  
+          <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}&month={{ invoice_info.month_id }}">
+            {{ invoice_info.month_name }}
+          </a>
+          <span class="invoices-count">Total invoices: {{ invoice_info.total_invoices }}</span>
+        {% elif view_type == "invoice_info" %}
+        <span class="invoices-info">
+          {% for invoice_source in invoice_info.invoice_sources %}
+            {{ invoice_source.revenue_source_name }}
+            <br>
+          {% endfor %}
+        </span>
+
+        </span>
         {% endif %}
         <br>
       {% endfor %}

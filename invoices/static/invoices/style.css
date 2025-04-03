@@ -16,3 +16,12 @@ body {
 .window-body {
 	font-size: 20px;
 }
+
+.invoices-count {
+	float: inline-end;
+	font-size: 15px;
+}
+
+.invoices-info {
+	margin-top: 10px;
+}

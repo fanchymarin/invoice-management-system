@@ -21,6 +21,11 @@ $(VENV_DIR): requirements.txt
 	$(call help_message, "Dumping database...")
 	cat dump.sql | $(VENV_DIR)/bin/python3 manage.py dbshell
 
+migrate:
+	$(call help_message, "Running migrations...")
+	$(VENV_DIR)/bin/python3 manage.py makemigrations invoices
+	$(VENV_DIR)/bin/python3 manage.py migrate
+
 debug:
 	$(call help_message, "Running python shell...")
 	$(VENV_DIR)/bin/python3 manage.py shell
