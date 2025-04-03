@@ -6,20 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'invoices/style.css' %}">
     <link rel="stylesheet" href="{% static 'invoices/98.css' %}">
-	<title>Revving - Invoices</title>
+    <title>Revving - Invoices</title>
 </head>
 <body>
-  <div class="window" >
+  <div class="window">
     <div class="title-bar">
       <div class="title-bar-text">
-        Invoices
+        {% if view_type == "years" %}
+          Invoices\{{ selected_customer }}
+        {% else %}
+          Invoices
+        {% endif %}
       </div>
     </div>
     <div class="window-body">
       {% for invoice_info in invoices_info %}
-        <a href="?customer_id={{ invoice_info.customer_id }}" >
-          {{ invoice_info.customer_name }}
-        </a>
+        {% if view_type == "customers" %}
+          <a href="?customer_id={{ invoice_info.customer_id }}">
+            {{ invoice_info.customer_name }}
+          </a>
+        {% elif view_type == "years" %}
+          <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}">
+            {{ invoice_info.year }}
+          </a>
+        {% endif %}
         <br>
       {% endfor %}
     </div>
