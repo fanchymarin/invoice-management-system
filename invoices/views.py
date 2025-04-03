@@ -1,6 +1,6 @@
 from django.db.models import Case, CharField, Count, DecimalField, JSONField, IntegerField, Sum, Value, When, Avg
 from django.db.models.functions import Coalesce, ExtractMonth, ExtractYear
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from .models import Invoice
 
@@ -20,7 +20,9 @@ def get_invoices_year(invoices_info, customer_id_query):
         year=ExtractYear('invoice_date'),
         total_invoices=Count('id')
     ).order_by('-year')
-    
+
+    if not invoices_info.exists():
+        raise Http404("No invoices found for the given customer_id.")
     return invoices_info
 
 def get_invoices_month(invoices_info, year_query):
@@ -46,6 +48,9 @@ def get_invoices_month(invoices_info, year_query):
         ),
         total_invoices=Count('id')
     ).order_by('-month_id')
+
+    if not invoices_info.exists():
+        raise Http404("No invoices found for the given year.")
     return invoices_info
 
 def unify_invoice_sources(data):
@@ -58,33 +63,34 @@ def unify_invoice_sources(data):
         for entry in invoice_info["invoice_sources"]:
             key = entry["revenue_source_name"], entry["currency_code"]
             if key in unified_sources:
-                unified_sources[key]["total_adjusted_gross_value"] += entry["total_adjusted_gross_value"]
-                unified_sources[key]["total_haircut_percentage"] += entry["total_haircut_percentage"]
-                unified_sources[key]["total_daily_advance_fee"] += entry["total_daily_advance_fee"]
-                unified_sources[key]["total_advance_duration"] += entry["total_advance_duration"]
+                unified_sources[key]["total_adjusted_gross_value"] += entry["adjusted_gross_value"]
+                unified_sources[key]["monthly_haircut_percent"] += entry["haircut_percent"]
+                unified_sources[key]["monthly_advance_fee"] += entry["daily_advance_fee"]
+                unified_sources[key]["monthly_advance_duration"] += entry["advance_duration"]
                 unified_sources[key]["total_invoices"] += 1
             else:
                 unified_sources[key] = {
                     "revenue_source_name": entry["revenue_source_name"],
                     "currency_code": entry["currency_code"],
-                    "total_adjusted_gross_value": entry["total_adjusted_gross_value"],
+                    "total_adjusted_gross_value": entry["adjusted_gross_value"],
                     "total_invoices": entry["total_invoices"],
-                    "total_haircut_percentage": entry["total_haircut_percentage"],
-                    "total_daily_advance_fee": entry["total_daily_advance_fee"],
-                    "total_advance_duration": entry["total_advance_duration"],
+                    "monthly_haircut_percent": entry["haircut_percent"],
+                    "monthly_advance_fee": entry["daily_advance_fee"],
+                    "monthly_advance_duration": entry["advance_duration"],
                     "available_advance": entry["available_advance"],
-                    "daily_fee_amount": entry["daily_fee_amount"]
                 }
     
-        # Calculate available advance and daily fee amount
-        for entry in invoice_info["invoice_sources"]:
-            key = entry["revenue_source_name"], entry["currency_code"]
-            
-            unified_sources[key]["available_advance"] = float(round(
-                unified_sources[key]['total_adjusted_gross_value'] * (1 - unified_sources[key]['total_haircut_percentage'] / 100), 2
+        # Calculate means for monthly params, available advance and daily fee amount
+        for entry in unified_sources:
+            unified_sources[entry]["monthly_haircut_percent"] = float(round(
+                unified_sources[entry]['monthly_haircut_percent'] / unified_sources[entry]['total_invoices'], 2
+            ))          
+            unified_sources[entry]["available_advance"] = float(round(
+                unified_sources[entry]['total_adjusted_gross_value'] * (1 - unified_sources[entry]['monthly_haircut_percent'] / 100), 2
             ))
-            unified_sources[key]["daily_fee_amount"] = float(round(
-                unified_sources[key]["available_advance"] * unified_sources[key]["total_daily_advance_fee"] / 100, 2))
+            unified_sources[entry]["monthly_advance_duration"] = round(
+                unified_sources[entry]['monthly_advance_duration'] / unified_sources[entry]['total_invoices']
+            )
   
         # Convert unified sources to list and sort
         unified_list = list(unified_sources.values())
@@ -104,45 +110,50 @@ def get_invoices_info(invoices_info, month_query):
     
     invoices_info = invoices_info.filter(month_id=month_query)
 
+    if not invoices_info.exists():
+        raise Http404("No invoices found for the given month.")
+
     total_amount_by_source_revenue = (
         invoices_info
-        .values('revenue_source_name', 'currency_code')
+        .values('revenue_source_name',
+                'adjusted_gross_value',
+                'currency_code',
+                'haircut_percent',
+                'advance_duration',
+                'daily_advance_fee',
+                )
         .annotate(
             total_invoices=Count('id'),
-            total_adjusted_gross_value=Coalesce(
-                Sum('adjusted_gross_value'), 0, output_field=DecimalField()
-            ),
-            total_haircut_percentage=Coalesce(
-                Avg('haircut_percent'), 0, output_field=DecimalField()
-            ),
-            total_daily_advance_fee=Coalesce(
-                Avg('daily_advance_fee'), 0, output_field=DecimalField()
-            ),
-            total_advance_duration=Coalesce(
-                Sum('advance_duration'), 0, output_field=IntegerField()
-            ),
             available_advance=Coalesce(0, 0, output_field=DecimalField()),
-            daily_fee_amount=Coalesce(0, 0, output_field=DecimalField())
         )
-        .order_by('-total_adjusted_gross_value')
+        .order_by('-adjusted_gross_value')
     )
 
     for entry in total_amount_by_source_revenue:
-        entry['total_adjusted_gross_value'] = float(round(entry['total_adjusted_gross_value'], 2))
-        entry['total_haircut_percentage'] = float(round(entry['total_haircut_percentage'], 2))
-        entry['total_daily_advance_fee'] = float(round(entry['total_daily_advance_fee'], 2))
-        entry['available_advance'] = float(round(entry['available_advance'], 2))
-        entry['daily_fee_amount'] = float(round(entry['daily_fee_amount'], 2))
+        entry['adjusted_gross_value'] = float(round(
+            entry['adjusted_gross_value'], 2))
+        entry['haircut_percent'] = float(round(
+            entry['haircut_percent'], 2))
+        entry['daily_advance_fee'] = float(round(
+            entry['daily_advance_fee'], 2))
+        entry['available_advance'] = float(round(
+            entry['available_advance'], 2))
 
-        invoices_info = invoices_info.annotate(
-            invoice_sources=Value(list(total_amount_by_source_revenue), output_field=JSONField())
-        )
+    invoices_info = invoices_info.annotate(
+        invoice_sources=Value(list(total_amount_by_source_revenue), output_field=JSONField())
+    )
 
     invoices_info = unify_invoice_sources(invoices_info)
     return invoices_info
 
 
 def get_customers(request):
+    # Validate request
+    if not request:
+        return JsonResponse({"error": "Invalid request"}, status=400)
+    if request.method != 'GET':
+        return JsonResponse({"error": "GET request required"}, status=400)
+    
     # Get query parameters
     customer_id_query = request.GET.get('customer_id', None)
     year_query = request.GET.get('year', None)
@@ -164,8 +175,9 @@ def get_customers(request):
         invoices_info = get_invoices_info(invoices_info, month_query)
 
     context['invoices_info'] = invoices_info
+
+    # Check if the request is for JSON response
     if request.headers.get('Accept') == 'application/json':
         return JsonResponse(list(context["invoices_info"]), safe=False)
-    
     return render(request, "invoices/index.html", context)
 
