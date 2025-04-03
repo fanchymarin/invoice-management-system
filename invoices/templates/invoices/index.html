@@ -44,8 +44,17 @@
           {% for invoice_source in invoice_info.invoice_sources %}
             {{ invoice_source.revenue_source_name }}
             <ul class="tree-view">
+              <span class="invoices-count">Total invoices: {{ invoice_source.total_invoices }}</span>
               <span class="invoices-info-box">
-                Total invoices amount: {{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Total invoices amount: {{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}
+                <br>
+                Total haircut percentage: {{ invoice_source.total_haircut_percentage|floatformat:2 }}%
+                <br>
+                Total daily advance fee: {{ invoice_source.total_daily_advance_fee|floatformat:2 }}
+                <br>
+                Total advance fee duration: {{ invoice_source.total_advance_duration }} days
+                <br>
+              </span>
             </ul>
             <br>
           {% endfor %}
