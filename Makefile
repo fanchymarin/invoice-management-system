@@ -34,10 +34,14 @@ debugdb:
 	$(call help_message, "Running database shell...")
 	$(VENV_DIR)/bin/python3 manage.py dbshell
 
+test:
+	$(call help_message, "Running tests...")
+	$(VENV_DIR)/bin/python3 manage.py test
+
 clean:
 	rm -rf $(VENV_DIR)
 	rm -rf db.sqlite3
 
 re: clean all
 
-.PHONY: run migrate debug debugdb clean re
+.PHONY: run migrate debug debugdb test clean re
