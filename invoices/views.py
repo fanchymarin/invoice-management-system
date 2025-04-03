@@ -54,31 +54,45 @@ def unify_invoice_sources(data):
     for invoice_info in data:
         unified_sources = {}
         
-        for source in invoice_info["invoice_sources"]:
-            key = source["revenue_source_name"], source["currency_code"]
+        # Initialize unified sources
+        for entry in invoice_info["invoice_sources"]:
+            key = entry["revenue_source_name"], entry["currency_code"]
             if key in unified_sources:
-                unified_sources[key]["total_adjusted_gross_value"] += source["total_adjusted_gross_value"]
-                unified_sources[key]["total_haircut_percentage"] += source["total_haircut_percentage"]
-                unified_sources[key]["total_daily_advance_fee"] += source["total_daily_advance_fee"]
-                unified_sources[key]["total_advance_duration"] += source["total_advance_duration"]
+                unified_sources[key]["total_adjusted_gross_value"] += entry["total_adjusted_gross_value"]
+                unified_sources[key]["total_haircut_percentage"] += entry["total_haircut_percentage"]
+                unified_sources[key]["total_daily_advance_fee"] += entry["total_daily_advance_fee"]
+                unified_sources[key]["total_advance_duration"] += entry["total_advance_duration"]
                 unified_sources[key]["total_invoices"] += 1
             else:
                 unified_sources[key] = {
-                    "revenue_source_name": source["revenue_source_name"],
-                    "currency_code": source["currency_code"],
-                    "total_adjusted_gross_value": source["total_adjusted_gross_value"],
-                    "total_invoices": source["total_invoices"],
-                    "total_haircut_percentage": source["total_haircut_percentage"],
-                    "total_daily_advance_fee": source["total_daily_advance_fee"],
-                    "total_advance_duration": source["total_advance_duration"],
+                    "revenue_source_name": entry["revenue_source_name"],
+                    "currency_code": entry["currency_code"],
+                    "total_adjusted_gross_value": entry["total_adjusted_gross_value"],
+                    "total_invoices": entry["total_invoices"],
+                    "total_haircut_percentage": entry["total_haircut_percentage"],
+                    "total_daily_advance_fee": entry["total_daily_advance_fee"],
+                    "total_advance_duration": entry["total_advance_duration"],
+                    "available_advance": entry["available_advance"],
+                    "daily_fee_amount": entry["daily_fee_amount"]
                 }
-        
+    
+        # Calculate available advance and daily fee amount
+        for entry in invoice_info["invoice_sources"]:
+            key = entry["revenue_source_name"], entry["currency_code"]
+            
+            unified_sources[key]["available_advance"] = float(round(
+                unified_sources[key]['total_adjusted_gross_value'] * (1 - unified_sources[key]['total_haircut_percentage'] / 100), 2
+            ))
+            unified_sources[key]["daily_fee_amount"] = float(round(
+                unified_sources[key]["available_advance"] * unified_sources[key]["total_daily_advance_fee"] / 100, 2))
+  
+        # Convert unified sources to list and sort
         unified_list = list(unified_sources.values())
         unified_list.sort(key=lambda x: x["total_adjusted_gross_value"], reverse=True)
         
+        # Replace the original invoice sources with the unified list
         new_invoice_info = invoice_info.copy()
         new_invoice_info["invoice_sources"] = unified_list
-        
         result.append(new_invoice_info)
     
     return result
@@ -94,6 +108,7 @@ def get_invoices_info(invoices_info, month_query):
         invoices_info
         .values('revenue_source_name', 'currency_code')
         .annotate(
+            total_invoices=Count('id'),
             total_adjusted_gross_value=Coalesce(
                 Sum('adjusted_gross_value'), 0, output_field=DecimalField()
             ),
@@ -106,7 +121,8 @@ def get_invoices_info(invoices_info, month_query):
             total_advance_duration=Coalesce(
                 Sum('advance_duration'), 0, output_field=IntegerField()
             ),
-            total_invoices=Count('id')
+            available_advance=Coalesce(0, 0, output_field=DecimalField()),
+            daily_fee_amount=Coalesce(0, 0, output_field=DecimalField())
         )
         .order_by('-total_adjusted_gross_value')
     )
@@ -115,6 +131,8 @@ def get_invoices_info(invoices_info, month_query):
         entry['total_adjusted_gross_value'] = float(round(entry['total_adjusted_gross_value'], 2))
         entry['total_haircut_percentage'] = float(round(entry['total_haircut_percentage'], 2))
         entry['total_daily_advance_fee'] = float(round(entry['total_daily_advance_fee'], 2))
+        entry['available_advance'] = float(round(entry['available_advance'], 2))
+        entry['daily_fee_amount'] = float(round(entry['daily_fee_amount'], 2))
 
         invoices_info = invoices_info.annotate(
             invoice_sources=Value(list(total_amount_by_source_revenue), output_field=JSONField())

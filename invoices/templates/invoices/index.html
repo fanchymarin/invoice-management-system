@@ -46,7 +46,12 @@
             <ul class="tree-view">
               <span class="invoices-count">Total invoices: {{ invoice_source.total_invoices }}</span>
               <span class="invoices-info-box">
-                Total invoices amount: {{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}
+                Total invoices amount: <span class="underline">{{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                <br>
+                Available amount: <span class="underline">{{ invoice_source.available_advance|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                <br>
+                Monthly advance fee: <span class="underline">{{ invoice_source.daily_fee_amount|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                <br>
                 <br>
                 Total haircut percentage: {{ invoice_source.total_haircut_percentage|floatformat:2 }}%
                 <br>
