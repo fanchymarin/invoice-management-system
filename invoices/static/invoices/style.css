@@ -33,17 +33,6 @@ body {
 	font-weight: normal;
 }
 
-/*   
-	"customer_name": "EagleFiesta",
-    "customer_id": 1,
-    "year": 2024,
-    "total_invoices": 25,
-    "month_id": 12,
-    "month_name": "December",
-    "invoice_sources": [
-      {
-        "revenue_source_name": "GizmoGuru",
-        "currency_code": "GBP",
-        "total_adjusted_gross_value": 122048.0
-      },
- */
+.underline {
+	text-decoration: underline;
+}
