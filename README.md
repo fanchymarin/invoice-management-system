@@ -29,8 +29,9 @@ This project is a Django web application that allows users to explore invoice da
   - `models.py`: Contains the Invoice model definition
   - `views.py`: Handles request processing and data aggregation
   - `tests.py`: Comprehensive test suite
-  - `templates/invoices/`: HTML templates
-  - `static/invoices/`: CSS and other static files
+  - `templates/invoices/`: HTML template for invoices page
+- `static`: CSS and other static files
+- `templates/registration/`: HTML template for login page
 
 ## Installation and Setup
 
@@ -52,6 +53,8 @@ This project is a Django web application that allows users to explore invoice da
    - Install dependencies from requirements.txt
    - Run database migrations
    - Import data from dump.sql (if available)
+   - Create Django superuser
+   - Create users from imported data
    - Start the development server
 
 ### Available Make Commands
@@ -70,7 +73,7 @@ make re               - Clean up all and run the server
 
 ## API Usage
 
-The application provides a REST API for accessing invoice data. Set the `Accept: application/json` header to receive JSON responses.
+The application provides a REST API for accessing invoice data. Set the `Accept: application/json` and `Authorization: Basic <base64-encoded-credentials>` headers in your requests to receive JSON responses.
 
 ### Endpoints
 
@@ -139,4 +142,3 @@ The test suite covers all API endpoints and includes tests for:
 - The application is designed for demonstration purposes and may not be suitable for production use.
 - The API endpoints are hosted within the same domain as the web application, which might not scale well for larger systems.
 - The application currently uses SQLite for simplicity.
-- The data import process is manual and requires a SQL dump file.
