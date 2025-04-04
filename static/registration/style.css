@@ -1,0 +1,11 @@
+body {
+	background-color: #212121;
+}
+
+.window {
+	width: 15%;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10%;
+	margin-bottom: 10%;
+}

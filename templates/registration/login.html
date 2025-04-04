@@ -4,13 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'registration/98.css' %}">
+    <link rel="stylesheet" href="{% static '98.css' %}">
 	<link rel="stylesheet" href="{% static 'registration/style.css' %}">
     <title>Revving - Login</title>
 </head>
-<h2>Log In</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Log In</button>
-</form>
+<body>
+	<div class="window">
+		<div class="title-bar"></div>
+		<div class="window-body">
+			<form method="post" action="{% url 'login' %}">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<button type="submit">Login</button>
+			</form>
+		</div>
+	</div>
+</body>
