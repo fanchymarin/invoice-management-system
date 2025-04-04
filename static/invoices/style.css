@@ -36,3 +36,7 @@ body {
 .underline {
 	text-decoration: underline;
 }
+
+.log-info {
+	font-size: medium;
+}

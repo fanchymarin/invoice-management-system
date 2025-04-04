@@ -23,6 +23,7 @@
         {% endif %}
       </div>
       <form action="{% url 'logout' %}" method="post">
+        <span class="log-info">Logged in as <b>{{ user.username }}</b></span>
         {% csrf_token %}
         <button type="submit">Log Out</button>
       </form>
