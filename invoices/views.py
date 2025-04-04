@@ -14,7 +14,7 @@ context = {
 
 def get_invoices_year(invoices_info, customer_id_query):
     context['view_type'] = 'years'
-    context['selected_customer'] = invoices_info.values_list('customer_name', flat=True).first()
+    context['selected_customer'] = invoices_info.filter(customer_id=customer_id_query).values_list('customer_name', flat=True).first()
 
     invoices_info = invoices_info.filter(customer_id=customer_id_query).annotate(
         year=ExtractYear('invoice_date'),
@@ -27,7 +27,7 @@ def get_invoices_year(invoices_info, customer_id_query):
 
 def get_invoices_month(invoices_info, year_query):
     context['view_type'] = 'months'
-    context['selected_year'] = invoices_info.values_list('year', flat=True).first()
+    context['selected_year'] = invoices_info.values_list('year', flat=True).filter(year=year_query).first()
 
     invoices_info = invoices_info.filter(year=year_query).annotate(
         month_id=ExtractMonth('invoice_date'),
@@ -106,7 +106,7 @@ def unify_invoice_sources(data):
 
 def get_invoices_info(invoices_info, month_query):
     context['view_type'] = 'invoice_info'
-    context['selected_month'] = invoices_info.values_list('month_name', flat=True).first()
+    context['selected_month'] = invoices_info.values_list('month_name', flat=True).filter(month_id=month_query).first()
     
     invoices_info = invoices_info.filter(month_id=month_query)
 
@@ -162,6 +162,8 @@ def get_customers(request):
     invoices_info = Invoice.objects.values(
         'customer_name', 
         'customer_id',
+    ).annotate(
+        total_invoices=Count('id')
     ).order_by('customer_name').distinct()
     context['view_type'] = 'customers'
 

@@ -49,9 +49,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+	'invoices.middleware.InvoiceAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'invoices.middleware.InvoiceAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
