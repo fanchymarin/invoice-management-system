@@ -33,6 +33,7 @@
           <a href="?customer_id={{ invoice_info.customer_id }}">
             {{ invoice_info.customer_name }}
           </a>
+          <span class="invoices-count">Total invoices: {{ invoice_info.total_invoices }}</span>
         {% elif view_type == "years" %}
             <a href="?customer_id={{ invoice_info.customer_id }}&year={{ invoice_info.year }}">
             {{ invoice_info.year }}

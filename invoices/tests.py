@@ -1,10 +1,12 @@
 import datetime
 from django.test import TestCase
 from .models import Invoice
+import base64
+from django.contrib.auth.models import User
 
 class InvoiceTestCase(TestCase):
 	def setUp(self):
-		self.client.login(username='admin', password='admin')
+		self.admin_user = User.objects.create_superuser(username="admin", password="admin")
 		Invoice.objects.create(
 			adjusted_gross_value=100.00,
 			haircut_percent=5.00,
@@ -59,7 +61,12 @@ class InvoiceTestCase(TestCase):
 		self.assertEqual(invoice_count, 3)
 
 	def test_no_param_query(self):
-		response = self.client.get('/invoices/', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
 		
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
@@ -67,17 +74,24 @@ class InvoiceTestCase(TestCase):
 			[
 				{
 					"customer_name": "Another Customer",
-					"customer_id": 2
+					"customer_id": 2,
+					"total_invoices": 1
 				},
 				{
 					"customer_name": "Test Customer",
-					"customer_id": 1
+					"customer_id": 1,
+					"total_invoices": 2
 				}
 			]
 		)
 
 	def test_customer_param_query(self):
-		response = self.client.get('/invoices/?customer_id=2', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=2', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
@@ -93,11 +107,22 @@ class InvoiceTestCase(TestCase):
 		)
 	
 	def test_customer_param_query_not_found(self):
-		response = self.client.get('/invoices/?customer_id=10', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=20', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
+		
 		self.assertEqual(response.status_code, 404)
 
 	def test_year_param_query(self):
-		response = self.client.get('/invoices/?customer_id=1&year=2023', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=1&year=2023', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
@@ -115,11 +140,22 @@ class InvoiceTestCase(TestCase):
 		)
 
 	def test_year_param_query_not_found(self):
-		response = self.client.get('/invoices/?customer_id=1&year=2025', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=1&year=2029', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
+
 		self.assertEqual(response.status_code, 404)
 
 	def test_month_param_query(self):
-		response = self.client.get('/invoices/?customer_id=1&year=2023&month=1', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=1&year=2023&month=1', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
@@ -156,5 +192,11 @@ class InvoiceTestCase(TestCase):
 		)
 
 	def test_month_param_query_not_found(self):
-		response = self.client.get('/invoices/?customer_id=1&year=2023&month=13', HTTP_ACCEPT='application/json')
+		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
+		response = self.client.get(
+            '/invoices/?customer_id=1&year=2023&month=13', 
+            HTTP_ACCEPT='application/json', 
+            HTTP_AUTHORIZATION=f'Basic {credentials}'
+        )
+
 		self.assertEqual(response.status_code, 404)
