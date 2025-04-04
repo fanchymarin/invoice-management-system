@@ -58,7 +58,7 @@ class InvoiceTestCase(TestCase):
 		invoice_count = Invoice.objects.count()
 		self.assertEqual(invoice_count, 3)
 
-	def test_get_customers(self):
+	def test_no_param_query(self):
 		response = self.client.get('/invoices/', HTTP_ACCEPT='application/json')
 		
 		self.assertEqual(response.status_code, 200)
@@ -81,15 +81,15 @@ class InvoiceTestCase(TestCase):
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
-			response.content,
+			str(response.content, encoding='utf8'),
 			[
 				{
 					"customer_name": "Another Customer",
 					"customer_id": 2,
-          "year": 2023,
-          "total_invoices": 1,
-        }
-      ]
+					"year": 2023,
+					"total_invoices": 1,
+				}
+			]
 		)
 	
 	def test_customer_param_query_not_found(self):
@@ -101,18 +101,18 @@ class InvoiceTestCase(TestCase):
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
-      response.content,
-        [
-          {
-            "customer_name": "Test Customer",
-            "customer_id": 1,
-            "year": 2023,
-            "total_invoices": 2,
-            "month_id": 1,
-            "month_name": "January"
-          }
-        ]
-      )
+		str(response.content, encoding='utf8'),
+			[
+				{
+					"customer_name": "Test Customer",
+					"customer_id": 1,
+					"year": 2023,
+					"total_invoices": 2,
+					"month_id": 1,
+					"month_name": "January"
+				}
+			]
+		)
 
 	def test_year_param_query_not_found(self):
 		response = self.client.get('/invoices/?customer_id=1&year=2025', HTTP_ACCEPT='application/json')
@@ -123,30 +123,37 @@ class InvoiceTestCase(TestCase):
 
 		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
-      response.content,
-        [
-          {
-            "customer_name": "Test Customer",
-            "customer_id": 1,
-            "year": 2023,
-            "total_invoices": 2,
-            "month_id": 1,
-            "month_name": "January",
-            "invoice_sources": [
-              {
-                "revenue_source_name": "Test Source",
-                "currency_code": "USD",
-                "total_adjusted_gross_value": 150.0,
-                "total_invoices": 2,
-                "monthly_haircut_percent": 7.5,
-                "monthly_advance_fee": 0.60,
-                "monthly_advance_duration": 30,
-                "available_advance": 138.75,
-              }
-            ]
-          }
-        ]
-      )
+		str(response.content, encoding='utf8'),
+			[
+				{
+					"customer_name": "Test Customer",
+					"customer_id": 1,
+					"year": 2023,
+					"total_invoices": 2,
+					"month_id": 1,
+					"month_name": "January",
+					"invoice_sources": [
+						{
+							"revenue_source_name": "Test Source",
+							"currency_code": "USD",
+							"total_adjusted_gross_value": 150.0,
+							"total_invoices": 2,
+							"monthly_haircut_percent": 7.5,
+							"monthly_advance_fee": 0.60,
+							"monthly_advance_duration": 30,
+							"available_advance": 138.75,
+
+							# Calculations:
+							# Total Adjusted Gross Value = 100.0 + 50.0 = 150.0
+							# Monthly Haircut Percent = (5.0 + 10.0) / 2 = 7.5
+							# Monthly Advance Fee = 0.50 + 0.10 = 0.60
+							# Monthly Advance Duration = (30 + 30) / 2 = 30
+							# Available Advance = 150.0 - ((150.0 * 7.5) / 100) = 138.75
+						}
+					]
+				}
+			]
+		)
 
 	def test_month_param_query_not_found(self):
 		response = self.client.get('/invoices/?customer_id=1&year=2023&month=13', HTTP_ACCEPT='application/json')
