@@ -146,7 +146,6 @@ def get_invoices_info(invoices_info, month_query):
     invoices_info = unify_invoice_sources(invoices_info)
     return invoices_info
 
-
 def get_customers(request):
     # Validate request
     if not request:
@@ -165,6 +164,9 @@ def get_customers(request):
         'customer_id',
     ).order_by('customer_name').distinct()
     context['view_type'] = 'customers'
+
+    if not invoices_info.exists():
+        raise Http404("No invoices found.")
 
     # Filter invoices based on query parameters
     if customer_id_query:
