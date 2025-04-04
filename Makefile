@@ -43,12 +43,15 @@ $(VENV_DIR): requirements.txt
 $(SQLITE_DB): $(DUMP_FILE)
 	$(call help_message, "Running migrations...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py migrate
-	export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
+	$(call help_message, "Dumping database...")
+	cat dump.sql | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
+	$(call help_message, "Creating superuser...")
+	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
 	export DJANGO_SUPERUSER_USERNAME=admin; \
 	export DJANGO_SUPERUSER_PASSWORD=admin; \
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
-	$(call help_message, "Dumping database...")
-	cat dump.sql | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
+	$(call help_message, "Creating users...")
+	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
 migrate-invoices:
 	$(call help_message, "Running migrations...")

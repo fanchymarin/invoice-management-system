@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-+fia#snp$tdhfjjn(*^+d9@-pavz*-jt_9s89&9(sa5p(=u=d^
 DEBUG = True
 
 LOGIN_REDIRECT_URL = "/invoices/"
+LOGOUT_REDIRECT_URL = "/invoices/"
 
 ALLOWED_HOSTS = []
 
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'invoices.middleware.InvoiceAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'

@@ -22,6 +22,10 @@
           Invoices\{{ selected_customer }}\{{ selected_year }}\{{ selected_month }}
         {% endif %}
       </div>
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Log Out</button>
+      </form>
     </div>
     <div class="window-body">
       {% for invoice_info in invoices_info %}

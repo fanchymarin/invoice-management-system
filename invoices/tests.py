@@ -4,7 +4,7 @@ from .models import Invoice
 
 class InvoiceTestCase(TestCase):
 	def setUp(self):
-		# Create some test data
+		self.client.login(username='admin', password='admin')
 		Invoice.objects.create(
 			adjusted_gross_value=100.00,
 			haircut_percent=5.00,
