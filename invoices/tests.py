@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 
 class InvoiceTestCase(TestCase):
 	def setUp(self):
+		# Create users
 		self.admin_user = User.objects.create_superuser(username="admin", password="admin")
+		self.customer_user = User.objects.create_user(username="Test Customer", password="1234")
 		Invoice.objects.create(
 			adjusted_gross_value=100.00,
 			haircut_percent=5.00,
@@ -68,7 +70,6 @@ class InvoiceTestCase(TestCase):
             HTTP_AUTHORIZATION=f'Basic {credentials}'
         )
 		
-		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
 			str(response.content, encoding='utf8'),
 			[
@@ -84,6 +85,7 @@ class InvoiceTestCase(TestCase):
 				}
 			]
 		)
+		self.assertEqual(response.status_code, 200)
 
 	def test_customer_param_query(self):
 		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
@@ -93,7 +95,6 @@ class InvoiceTestCase(TestCase):
             HTTP_AUTHORIZATION=f'Basic {credentials}'
         )
 
-		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
 			str(response.content, encoding='utf8'),
 			[
@@ -105,6 +106,7 @@ class InvoiceTestCase(TestCase):
 				}
 			]
 		)
+		self.assertEqual(response.status_code, 200)
 	
 	def test_customer_param_query_not_found(self):
 		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
@@ -124,7 +126,6 @@ class InvoiceTestCase(TestCase):
             HTTP_AUTHORIZATION=f'Basic {credentials}'
         )
 
-		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
 		str(response.content, encoding='utf8'),
 			[
@@ -138,6 +139,7 @@ class InvoiceTestCase(TestCase):
 				}
 			]
 		)
+		self.assertEqual(response.status_code, 200)
 
 	def test_year_param_query_not_found(self):
 		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
@@ -157,7 +159,6 @@ class InvoiceTestCase(TestCase):
             HTTP_AUTHORIZATION=f'Basic {credentials}'
         )
 
-		self.assertEqual(response.status_code, 200)
 		self.assertJSONEqual(
 		str(response.content, encoding='utf8'),
 			[
@@ -190,6 +191,7 @@ class InvoiceTestCase(TestCase):
 				}
 			]
 		)
+		self.assertEqual(response.status_code, 200)
 
 	def test_month_param_query_not_found(self):
 		credentials = base64.b64encode(b'admin:admin').decode('utf-8')
@@ -200,3 +202,64 @@ class InvoiceTestCase(TestCase):
         )
 
 		self.assertEqual(response.status_code, 404)
+
+	def test_user(self):
+		credentials = base64.b64encode(b'Test Customer:1234').decode('utf-8')
+		response = self.client.get(
+			'/invoices/?customer_id=1', 
+			HTTP_ACCEPT='application/json', 
+			HTTP_AUTHORIZATION=f'Basic {credentials}'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			[
+				{
+					"customer_name": "Test Customer",
+					"customer_id": 1,
+					"year": 2023,
+					"total_invoices": 2
+				}
+			]
+		)
+		self.assertEqual(response.status_code, 200)
+
+	def test_no_user_found(self):
+		credentials = base64.b64encode(b'admin:wrongpassword').decode('utf-8')
+		response = self.client.get(
+			'/invoices/', 
+			HTTP_ACCEPT='application/json', 
+			HTTP_AUTHORIZATION=f'Basic {credentials}'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			{"error": "Invalid credentials"}
+		)
+		self.assertEqual(response.status_code, 401)
+
+	def test_no_authentication(self):
+		response = self.client.get(
+			'/invoices/', 
+			HTTP_ACCEPT='application/json'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			{"error": "Basic authentication required"}
+		)
+		self.assertEqual(response.status_code, 401)
+
+	def test_no_authorization(self):
+		credentials = base64.b64encode(b'Test Customer:1234').decode('utf-8')
+		response = self.client.get(
+			'/invoices/', 
+			HTTP_ACCEPT='application/json', 
+			HTTP_AUTHORIZATION=f'Basic {credentials}'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			{"error": "Access denied"}
+		)
+		self.assertEqual(response.status_code, 403)
