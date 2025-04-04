@@ -10,6 +10,9 @@ PYTHON_BIN = python3
 SQLITE_DB = db.sqlite3
 DUMP_FILE = dump.sql
 
+DJANGO_SUPERUSER_USERNAME = admin
+DJANGO_SUPERUSER_PASSWORD = admin
+
 define help_message =
 	@echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)"
 	@echo "$(BOLD)${1}$(RESET)"
@@ -47,8 +50,8 @@ $(SQLITE_DB): $(DUMP_FILE)
 	cat dump.sql | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
 	$(call help_message, "Creating superuser...")
 	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
-	export DJANGO_SUPERUSER_USERNAME=admin; \
-	export DJANGO_SUPERUSER_PASSWORD=admin; \
+	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
+	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
 	$(call help_message, "Creating users...")
 	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
