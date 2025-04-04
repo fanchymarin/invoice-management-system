@@ -1,4 +1,4 @@
-from django.db.models import Case, CharField, Count, DecimalField, JSONField, IntegerField, Sum, Value, When, Avg
+from django.db.models import Case, CharField, Count, DecimalField, JSONField, Value, When
 from django.db.models.functions import Coalesce, ExtractMonth, ExtractYear
 from django.http import JsonResponse, Http404
 from django.shortcuts import render

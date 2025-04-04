@@ -25,6 +25,8 @@ SECRET_KEY = 'django-insecure-+fia#snp$tdhfjjn(*^+d9@-pavz*-jt_9s89&9(sa5p(=u=d^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGIN_REDIRECT_URL = "/invoices/"
+
 ALLOWED_HOSTS = []
 
 
@@ -55,7 +57,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
