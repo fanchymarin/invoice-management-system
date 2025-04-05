@@ -77,29 +77,33 @@ The application provides a REST API for accessing invoice data. Set the `Accept:
 
 ### Endpoints
 
-1. **Get Customers**
+1. **Get all customers**
    ```
    GET /invoices/
    ```
-   Returns a list of all customers.
-
-2. **Get Years for a Customer**
+   > [!NOTE] Superuser credentials are required to access this endpoint.
+   
+2. **Get customer invoices by year**
    ```
    GET /invoices/?customer_id=<id>
    ```
-   Returns years with invoices for the specified customer.
 
-3. **Get Months for a Customer in a Year**
+   customer_id: The ID of the customer whose invoices you want to retrieve.
+
+3. **Get customer invoices by year and month**
    ```
    GET /invoices/?customer_id=<id>&year=<year>
    ```
-   Returns months with invoices for the specified customer and year.
+   customer_id: The ID of the customer whose invoices you want to retrieve.
+   year: The year for which you want to retrieve invoices.
 
-4. **Get Invoice Details for a Month**
+4. **Get customer invoices by year, month, and revenue source**
    ```
    GET /invoices/?customer_id=<id>&year=<year>&month=<month>
    ```
-   Returns detailed invoice information for the specified period, grouped by revenue source.
+   customer_id: The ID of the customer whose invoices you want to retrieve.
+   year: The year for which you want to retrieve invoices.
+   month: The month for which you want to retrieve invoices.
 
 ## Data Model
 
@@ -135,7 +139,7 @@ The test suite covers all API endpoints and includes tests for:
 - Customer queries
 - Year queries
 - Month queries
-- HTTP 404 handling for invalid parameters
+- HTTP error code handling
 
 ## Limitations
 
