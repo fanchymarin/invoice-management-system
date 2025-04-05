@@ -39,13 +39,6 @@ up: setup
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py runserver
 
 setup: $(VENV_DIR) $(SQLITE_DB)
-	$(call help_message, "Creating superuser...")
-	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
-	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
-	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
-	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
-	$(call help_message, "Creating users...")
-	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
 $(VENV_DIR): requirements.txt
 	$(call help_message, "Creating virtual environment...")
@@ -57,6 +50,13 @@ $(SQLITE_DB): $(DUMP_FILE)
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py migrate
 	$(call help_message, "Dumping database...")
 	cat $(DUMP_FILE) | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
+	$(call help_message, "Creating superuser...")
+	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
+	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
+	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
+	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
+	$(call help_message, "Creating users...")
+	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
 debug: setup
 	$(call help_message, "Running python shell...")
