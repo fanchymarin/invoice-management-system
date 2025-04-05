@@ -25,7 +25,7 @@ list:
 	@echo "${BLUE}${BOLD}Available recipes:"
 	@echo "  ${GREEN}${BOLD}list             ${CYAN}- Show this help message"
 	@echo "  ${GREEN}${BOLD}up               ${CYAN}- Run the server"
-	@echo "  ${GREEN}${BOLD}migrate-invoices ${CYAN}- Run migrations for invoices app"
+	@echo "  ${GREEN}${BOLD}setup            ${CYAN}- Create virtual environment and install dependencies"
 	@echo "  ${GREEN}${BOLD}debug            ${CYAN}- Run python shell"
 	@echo "  ${GREEN}${BOLD}debugdb          ${CYAN}- Run database shell"
 	@echo "  ${GREEN}${BOLD}test             ${CYAN}- Run tests"
@@ -34,9 +34,18 @@ list:
 	@echo "  ${GREEN}${BOLD}re               ${CYAN}- Clean up all and run the server"
 	@echo
 
-up: $(VENV_DIR) $(SQLITE_DB)
+up: setup
 	$(call help_message, "Running server...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py runserver
+
+setup: $(VENV_DIR) $(SQLITE_DB)
+	$(call help_message, "Creating superuser...")
+	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
+	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
+	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
+	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
+	$(call help_message, "Creating users...")
+	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
 $(VENV_DIR): requirements.txt
 	$(call help_message, "Creating virtual environment...")
@@ -48,28 +57,16 @@ $(SQLITE_DB): $(DUMP_FILE)
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py migrate
 	$(call help_message, "Dumping database...")
 	cat dump.sql | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
-	$(call help_message, "Creating superuser...")
-	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
-	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
-	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
-	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py createsuperuser --noinput
-	$(call help_message, "Creating users...")
-	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
-migrate-invoices:
-	$(call help_message, "Running migrations...")
-	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py makemigrations invoices
-	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py migrate
-
-debug:
+debug: setup
 	$(call help_message, "Running python shell...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
-debugdb:
+debugdb: setup
 	$(call help_message, "Running database shell...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
 
-test:
+test: setup
 	$(call help_message, "Running tests...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py test
 
@@ -81,4 +78,4 @@ fclean: clean
 
 re: fclean up
 
-.PHONY: list up migrate-invoices debug debugdb test clean fclean re
+.PHONY: list up setup debug debugdb test clean fclean re
