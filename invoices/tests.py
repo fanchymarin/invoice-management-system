@@ -169,7 +169,7 @@ class InvoiceTestCase(TestCase):
 					"year": 2023,
 					"month_id": 1,
 					"month_name": "January",
-					"invoice_sources": [
+					"source_revenue_info": [
 						{
 							"revenue_source_name": "Test Source",
 							"currency_code": "USD",
