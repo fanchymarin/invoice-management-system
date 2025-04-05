@@ -124,8 +124,9 @@ The `Invoice` model includes the following fields:
 ## Financial Calculations
 
 The application performs several key financial calculations:
-- Monthly haircut percentage (average across invoices)
-- Available advance amount (adjusted for haircut)
+- Monthly invoices amount
+- Available advance amount
+- Monthly fee amount
 
 ## Testing
 
