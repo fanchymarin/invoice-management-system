@@ -47,21 +47,21 @@
           <span class="invoices-count">Total invoices: {{ invoice_info.total_invoices }}</span>
         {% elif view_type == "invoice_info" %}
         <span class="invoices-info">
-          {% for invoice_source in invoice_info.invoice_sources %}
-            {{ invoice_source.revenue_source_name }}
+          {% for source_revenue in invoice_info.source_revenue_info %}
+            {{ source_revenue.revenue_source_name }}
             <ul class="tree-view">
-              <span class="invoices-count">Total invoices: {{ invoice_source.total_invoices }}</span>
+              <span class="invoices-count">Total invoices: {{ source_revenue.total_invoices }}</span>
               <span class="invoices-info-box">
-                Total invoices amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Total invoices amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.total_adjusted_gross_value|floatformat:2 }} {{ source_revenue.currency_code }}</span>
                 <br>
-                Available advance amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.available_advance|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Available advance amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.available_advance|floatformat:2 }} {{ source_revenue.currency_code }}</span>
                 <br>
-                Monthly fee amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.monthly_fee_amount|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Monthly fee amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.monthly_fee_amount|floatformat:2 }} {{ source_revenue.currency_code }}</span>
                 <br>
                 <br>
-                Monthly haircut percent:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ invoice_source.monthly_haircut_percent|floatformat:2 }}%
+                Monthly haircut percent:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ source_revenue.monthly_haircut_percent|floatformat:2 }}%
                 <br>
-                Monthly advance fee duration:&nbsp;&nbsp;&nbsp;{{ invoice_source.monthly_advance_duration }} days
+                Monthly advance fee duration:&nbsp;&nbsp;&nbsp;{{ source_revenue.monthly_advance_duration }} days
                 <br>
               </span>
             </ul>
