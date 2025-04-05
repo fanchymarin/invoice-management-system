@@ -165,8 +165,8 @@ class InvoiceTestCase(TestCase):
 				{
 					"customer_name": "Test Customer",
 					"customer_id": 1,
-					"year": 2023,
 					"total_invoices": 2,
+					"year": 2023,
 					"month_id": 1,
 					"month_name": "January",
 					"invoice_sources": [
@@ -176,9 +176,10 @@ class InvoiceTestCase(TestCase):
 							"total_adjusted_gross_value": 150.0,
 							"total_invoices": 2,
 							"monthly_haircut_percent": 7.5,
-							"monthly_advance_fee": 0.60,
+							"total_advance_fee": 0.60,
 							"monthly_advance_duration": 30,
 							"available_advance": 138.75,
+							'monthly_fee_amount': 0.83
 
 							# Calculations:
 							# Total Adjusted Gross Value = 100.0 + 50.0 = 150.0
@@ -186,6 +187,7 @@ class InvoiceTestCase(TestCase):
 							# Monthly Advance Fee = 0.50 + 0.10 = 0.60
 							# Monthly Advance Duration = (30 + 30) / 2 = 30
 							# Available Advance = 150.0 - ((150.0 * 7.5) / 100) = 138.75
+							# Monthly Fee Amount = 138.75 * (0.60 / 100) = 0.83
 						}
 					]
 				}

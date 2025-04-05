@@ -52,16 +52,16 @@
             <ul class="tree-view">
               <span class="invoices-count">Total invoices: {{ invoice_source.total_invoices }}</span>
               <span class="invoices-info-box">
-                Total invoices amount: <span class="underline">{{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Total invoices amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.total_adjusted_gross_value|floatformat:2 }} {{ invoice_source.currency_code }}</span>
                 <br>
-                Available amount: <span class="underline">{{ invoice_source.available_advance|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                Available advance amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.available_advance|floatformat:2 }} {{ invoice_source.currency_code }}</span>
+                <br>
+                Monthly fee amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ invoice_source.monthly_fee_amount|floatformat:2 }} {{ invoice_source.currency_code }}</span>
                 <br>
                 <br>
-                Monthly haircut percent: {{ invoice_source.monthly_haircut_percent|floatformat:2 }}%
+                Monthly haircut percent:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ invoice_source.monthly_haircut_percent|floatformat:2 }}%
                 <br>
-                Monthly advance fee: {{ invoice_source.monthly_advance_fee|floatformat:2 }}%
-                <br>
-                Monthly advance fee duration: {{ invoice_source.monthly_advance_duration }} days
+                Monthly advance fee duration:&nbsp;&nbsp;&nbsp;{{ invoice_source.monthly_advance_duration }} days
                 <br>
               </span>
             </ul>
