@@ -52,7 +52,7 @@ This project is a Django web application that allows users to explore invoice da
    - Create a virtual environment
    - Install dependencies from requirements.txt
    - Run database migrations
-   - Import data from dump.sql (if available)
+   - Import data from SQL dump file
    - Create Django superuser
    - Create users from imported data
    - Start the development server
