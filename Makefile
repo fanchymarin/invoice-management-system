@@ -8,7 +8,7 @@ RESET = \033[0m
 VENV_DIR = .venv
 PYTHON_BIN = python3
 SQLITE_DB = db.sqlite3
-DUMP_FILE = dump.sql
+DUMP_FILE = dump.sql.sqlite3
 
 DJANGO_SUPERUSER_USERNAME = admin
 DJANGO_SUPERUSER_PASSWORD = admin
@@ -56,7 +56,7 @@ $(SQLITE_DB): $(DUMP_FILE)
 	$(call help_message, "Running migrations...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py migrate
 	$(call help_message, "Dumping database...")
-	cat dump.sql | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
+	cat $(DUMP_FILE) | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
 
 debug: setup
 	$(call help_message, "Running python shell...")
