@@ -81,8 +81,8 @@ The application provides a REST API for accessing invoice data. Set the `Accept:
    ```
    GET /invoices/
    ```
-   > [!NOTE]
-   > Superuser credentials are required to access this endpoint.
+> [!NOTE]
+> Superuser credentials are required to access this endpoint.
    
 2. **Get customer invoices by year**
    ```
