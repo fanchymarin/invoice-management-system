@@ -73,7 +73,7 @@ The system comes with two types of users:
   - Username: `admin`
   - Password: `admin`
 - **Customer users**: Can only view their own invoices
-  - Username: customer name
+  - Username: `<customer name>`
   - Password: `1234`
 
 ## Available Make Commands
