@@ -21,6 +21,8 @@ list:
 	@echo "  ${GREEN}${BOLD}up               ${CYAN}- Run the containerized application"
 	@echo "  ${GREEN}${BOLD}build            ${CYAN}- Build the container image"
 	@echo "  ${GREEN}${BOLD}down             ${CYAN}- Stop the containerized application"
+	@echo "  ${GREEN}${BOLD}test             ${CYAN}- Run tests in the containerized application"
+	@echo "  ${GREEN}${BOLD}test-github      ${CYAN}- Run tests in the containerized application (GitHub Actions)"
 	@echo "  ${GREEN}${BOLD}clean            ${CYAN}- Stop and remove the database volume"
 	@echo "  ${GREEN}${BOLD}fclean           ${CYAN}- Stop and remove all containers and volumes"
 	@echo "  ${GREEN}${BOLD}re               ${CYAN}- Clean up all and run the containerized application"
@@ -38,14 +40,18 @@ down:
 	$(call help_message, "Stopping the containerized application...")
 	docker compose --project-name=${PROJECT_NAME} down
 
+test: up
+	$(call help_message, "Running tests...")
+	docker compose --project-name=${PROJECT_NAME} exec django-server make test
+
 clean: down
 	$(call help_message, "Removing the database volume...")
 	docker volume rm -f ${PROJECT_NAME}_db-data
 
 fclean: clean
 	$(call help_message, "Removing container image...")
-	docker rmi -f ${PROJECT_NAME}
+	docker rmi -f ${PROJECT_NAME}-django-server
 
 re: fclean up
 
-.PHONY: all list up down clean fclean re
+.PHONY: all list up build down test test-github clean fclean re

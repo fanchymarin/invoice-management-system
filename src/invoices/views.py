@@ -1,9 +1,12 @@
-from django.db.models import Case, CharField, JSONField, Count, F, Value, When, Sum, Avg
+from django.db.models import Case, CharField, JSONField, Count, F, Value, When, Sum, Avg, TextField, FloatField
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from .models import Invoice
 from django.db.models.functions import Round
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.postgres.aggregates import ArrayAgg
+import json
 
 month_map = (
     Case(
@@ -70,30 +73,24 @@ def get_invoices_info(invoices_info, month_query):
         invoices_info
             .values('revenue_source_name', 'currency_code')
             .annotate(
-                total_adjusted_gross_value=Round(Sum('adjusted_gross_value'), 2, output_field=CharField()),
-            #     monthly_haircut_percent=Round(Avg('haircut_percent'), 2, output_field=CharField()),
-            #     total_advance_fee=Round(Sum('daily_advance_fee'), 2, output_field=CharField()),
-            #     monthly_advance_duration=Round(Avg('advance_duration')),
-            #     available_advance=Round(
-            #         F('total_adjusted_gross_value') * (1 - F('monthly_haircut_percent') / 100), 2, output_field=CharField()
-            #     ),
-            #     monthly_fee_amount=Round(
-            #         F('available_advance') * (F('total_advance_fee') / 100), 2, output_field=CharField()
-            #     ),
-            #     total_invoices=Count('id'),
+                total_adjusted_gross_value=Round(Sum('adjusted_gross_value'), 2, output_field=FloatField()),
+                monthly_haircut_percent=Round(Avg('haircut_percent'), 2, output_field=FloatField()),
+                total_advance_fee=Round(Sum('daily_advance_fee'), 2, output_field=FloatField()),
+                monthly_advance_duration=Round(Avg('advance_duration')),
+                available_advance=Round(
+                    F('total_adjusted_gross_value') * (1 - F('monthly_haircut_percent') / 100), 2, output_field=FloatField()
+                ),
+                monthly_fee_amount=Round(
+                    F('available_advance') * (F('total_advance_fee') / 100), 2, output_field=FloatField()
+                ),
+                total_invoices=Count('id'),
             )
             .order_by('-total_adjusted_gross_value')
     )
-    from django.core.serializers.json import DjangoJSONEncoder
-    import json
 
-
-    # Convert source_revenue_info to a list for JSON serialization
-    source_revenue_list = list(source_revenue_info)
-    
     # Merge source_revenue info with invoices_info
     invoices_info = invoices_info.annotate(
-        source_revenue_info=Value(json.dumps(source_revenue_list, cls=DjangoJSONEncoder), output_field=JSONField())
+        source_revenue_info=Value(list(source_revenue_info), output_field=JSONField())
     )
     
     return invoices_info

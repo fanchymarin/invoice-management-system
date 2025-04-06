@@ -6,7 +6,7 @@ BOLD = \033[1m
 RESET = \033[0m
 
 PYTHON_BIN = python
-DUMP_FILE = dump.sql
+DUMP_FILE = dump.sql.postgres
 
 DJANGO_SUPERUSER_USERNAME = admin
 DJANGO_SUPERUSER_PASSWORD = admin
