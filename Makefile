@@ -31,6 +31,12 @@ list:
 up: build
 	$(call help_message, "Building and running the containerized  application...")
 	docker compose --project-name=${PROJECT_NAME} up -d
+	$(call help_message, "Waiting for application to be ready...")
+	@until docker compose --project-name=${PROJECT_NAME} exec django-server python manage.py check >/dev/null 2>&1; do \
+		echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)"; \
+		echo " $(BOLD)Starting application...$(RESET)"; \
+		sleep 2; \
+	done
 
 build:
 	$(call help_message, "Building the container image...")
@@ -41,7 +47,7 @@ down:
 	docker compose --project-name=${PROJECT_NAME} down
 
 test: up
-	$(call help_message, "Running tests...")
+	$(call help_message, "Running tests from container...")
 	docker compose --project-name=${PROJECT_NAME} exec django-server make test
 
 clean: down
@@ -54,4 +60,4 @@ fclean: clean
 
 re: fclean up
 
-.PHONY: all list up build down test test-github clean fclean re
+.PHONY: all list up build down test clean fclean re
