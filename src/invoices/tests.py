@@ -47,7 +47,7 @@ class InvoiceTestCase(TestCase):
 		)
 
 	def test_invoices_creation(self):
-		invoice = Invoice.objects.get(customer_name='Test Customer', id=1)
+		invoice = Invoice.objects.get(customer_name='Test Customer', invoice_date='2023-01-01')
 		self.assertEqual(invoice.adjusted_gross_value, 100.00)
 		self.assertEqual(invoice.haircut_percent, 5.00)
 		self.assertEqual(invoice.daily_advance_fee, 0.50)

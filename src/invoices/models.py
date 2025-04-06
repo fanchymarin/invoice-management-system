@@ -12,6 +12,5 @@ class Invoice(models.Model):
     revenue_source_name = models.CharField(max_length=30)
     currency_code = models.CharField(max_length=3)
     invoice_date = models.DateField()
-    source_revenue_info = models.JSONField(blank=True, null=True)
     def __str__(self):
         return f"Invoice {self.id}"
