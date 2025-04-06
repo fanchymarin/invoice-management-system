@@ -1,0 +1,32 @@
+services:
+  db:
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      interval: 1s
+      retries: 5
+      test: ["CMD-SHELL", "pg_isready"]
+      timeout: 5s
+    hostname: postgres
+    image: postgres:17.2
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  django-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - ./src:/app
+
+volumes:
+  db-data:
