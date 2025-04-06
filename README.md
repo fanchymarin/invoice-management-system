@@ -64,7 +64,7 @@ This Invoice Management System is a Docker-containerized Django web application 
    make up
    ```
 
-3. Access the application at http://localhost:8080
+3. Access the application at http://localhost:8000
 
 ### Default Credentials
 
