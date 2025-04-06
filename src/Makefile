@@ -37,6 +37,8 @@ up: setup
 	$(PYTHON_BIN) manage.py runserver 0.0.0.0:8000
 
 setup: $(DUMP_FILE)
+	$(call help_message, "Installing python dependencies...")
+	pip install --no-cache-dir -r requirements.txt
 	$(call help_message, "Running migrations...")
 	$(PYTHON_BIN) manage.py makemigrations --noinput
 	$(PYTHON_BIN) manage.py migrate
@@ -58,7 +60,7 @@ dbshell:
 	$(call help_message, "Running database shell...")
 	$(PYTHON_BIN) manage.py dbshell
 
-test: setup
+test:
 	$(call help_message, "Running tests...")
 	$(PYTHON_BIN) manage.py test
 
