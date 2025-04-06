@@ -26,8 +26,8 @@ list:
 	@echo "  ${GREEN}${BOLD}list             ${CYAN}- Show this help message"
 	@echo "  ${GREEN}${BOLD}up               ${CYAN}- Run the server"
 	@echo "  ${GREEN}${BOLD}setup            ${CYAN}- Create virtual environment and install dependencies"
-	@echo "  ${GREEN}${BOLD}debug            ${CYAN}- Run python shell"
-	@echo "  ${GREEN}${BOLD}debugdb          ${CYAN}- Run database shell"
+	@echo "  ${GREEN}${BOLD}shell            ${CYAN}- Run python shell"
+	@echo "  ${GREEN}${BOLD}dbshell          ${CYAN}- Run database shell"
 	@echo "  ${GREEN}${BOLD}test             ${CYAN}- Run tests"
 	@echo "  ${GREEN}${BOLD}clean            ${CYAN}- Clean up database"
 	@echo "  ${GREEN}${BOLD}fclean           ${CYAN}- Clean up database and virtual environment"
@@ -58,11 +58,11 @@ $(SQLITE_DB): $(DUMP_FILE)
 	$(call help_message, "Creating users...")
 	cat create_users.py | $(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
-debug: setup
+shell: setup
 	$(call help_message, "Running python shell...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py shell
 
-debugdb: setup
+dbshell: setup
 	$(call help_message, "Running database shell...")
 	$(VENV_DIR)/bin/$(PYTHON_BIN) manage.py dbshell
 
@@ -78,4 +78,4 @@ fclean: clean
 
 re: fclean up
 
-.PHONY: list up setup debug debugdb test clean fclean re
+.PHONY: list up setup shell dbshell test clean fclean re
