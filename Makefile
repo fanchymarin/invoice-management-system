@@ -22,7 +22,6 @@ list:
 	@echo "  ${GREEN}${BOLD}build            ${CYAN}- Build the container image"
 	@echo "  ${GREEN}${BOLD}down             ${CYAN}- Stop the containerized application"
 	@echo "  ${GREEN}${BOLD}test             ${CYAN}- Run tests in the containerized application"
-	@echo "  ${GREEN}${BOLD}test-github      ${CYAN}- Run tests in the containerized application (GitHub Actions)"
 	@echo "  ${GREEN}${BOLD}clean            ${CYAN}- Stop and remove the database volume"
 	@echo "  ${GREEN}${BOLD}fclean           ${CYAN}- Stop and remove all containers and volumes"
 	@echo "  ${GREEN}${BOLD}re               ${CYAN}- Clean up all and run the containerized application"
