@@ -13,14 +13,15 @@ This project is a Django web application that allows users to explore invoice da
   - View years with invoices for a specific customer
   - Browse months within a year
   - View detailed invoice information grouped by revenue source
-- REST API support via JSON responses
+- REST API support via JSON responses with Basic Authentication
 - Responsive UI with retro Windows 98-inspired styling
 - Unit tests for all API endpoints
+- Role-based access control (admin vs customer users)
 
 ## Technology Stack
 
 - Django 5.1.7
-- SQLite database
+- PostgreSQL database
 - CSS with 98.css for Windows 98-style UI
 
 ## Project Structure
@@ -28,6 +29,7 @@ This project is a Django web application that allows users to explore invoice da
 - `invoices/`: Main application directory
   - `models.py`: Contains the Invoice model definition
   - `views.py`: Handles request processing and data aggregation
+  - `middleware.py`: Custom middleware for authentication and access control
   - `tests.py`: Comprehensive test suite
   - `templates/invoices/`: HTML template for invoices page
 - `static`: CSS and other static files
@@ -39,6 +41,7 @@ This project is a Django web application that allows users to explore invoice da
 
 - Python 3.x
 - Make (for using the Makefile commands)
+- PostgreSQL database
 
 ### Getting Started
 
@@ -49,27 +52,32 @@ This project is a Django web application that allows users to explore invoice da
    make up
    ```
    This will:
-   - Create a virtual environment
    - Install dependencies from requirements.txt
    - Run database migrations
    - Import data from SQL dump file
-   - Create Django superuser
-   - Create users from imported data
-   - Start the development server
+   - Create Django superuser (username: `admin`, password: `admin`)
+   - Create users from imported data (password: `1234` for all customer users)
+   - Start the development server at `0.0.0.0:8000`
 
 ### Available Make Commands
 
 ```
 make list             - Show all available commands
 make up               - Run the server
-make migrate-invoices - Run migrations for invoices app
-make debug            - Run python shell
-make debugdb          - Run database shell
+make setup            - Create virtual environment and install dependencies
+make shell            - Run python shell
+make dbshell          - Run database shell
 make test             - Run tests
 make clean            - Clean up database
 make fclean           - Clean up database and virtual environment
 make re               - Clean up all and run the server
 ```
+
+## Authentication
+
+The system has two types of users:
+- **Superuser**: Can view all customers and their invoices (username: admin, password: admin)
+- **Customer users**: Can only view their own invoices (username: customer name, password: 1234)
 
 ## API Usage
 
@@ -81,30 +89,34 @@ The application provides a REST API for accessing invoice data. Set the `Accept:
    ```
    GET /invoices/
    ```
-> [!NOTE]
-> Superuser credentials are required to access this endpoint.
+   > **NOTE**: Superuser credentials are required to access this endpoint.
    
 2. **Get customer invoices by year**
    ```
    GET /invoices/?customer_id=<id>
    ```
 
-   customer_id: The ID of the customer whose invoices you want to retrieve.
-
 3. **Get customer invoices by year and month**
    ```
    GET /invoices/?customer_id=<id>&year=<year>
    ```
-   customer_id: The ID of the customer whose invoices you want to retrieve.
-   year: The year for which you want to retrieve invoices.
 
 4. **Get customer invoices by year, month, and revenue source**
    ```
    GET /invoices/?customer_id=<id>&year=<year>&month=<month>
    ```
-   customer_id: The ID of the customer whose invoices you want to retrieve.
-   year: The year for which you want to retrieve invoices.
-   month: The month for which you want to retrieve invoices.
+
+### Authentication Headers
+
+API requests must include Basic Authentication:
+```
+Authorization: Basic <base64-encoded-credentials>
+```
+
+Example:
+```
+Authorization: Basic YWRtaW46YWRtaW4=  (for admin:admin)
+```
 
 ## Data Model
 
@@ -124,9 +136,16 @@ The `Invoice` model includes the following fields:
 ## Financial Calculations
 
 The application performs several key financial calculations:
-- Monthly invoices amount
-- Available advance amount
-- Monthly fee amount
+- Monthly invoices amount (total_adjusted_gross_value)
+- Available advance amount = total_adjusted_gross_value * (1 - monthly_haircut_percent / 100)
+- Monthly fee amount = available_advance * (total_advance_fee / 100)
+
+## Security Features
+
+- Custom middleware for authentication and authorization
+- Role-based access control
+- Each customer can only access their own invoices
+- Basic Authentication for API requests
 
 ## Testing
 
@@ -135,16 +154,15 @@ Run the test suite with:
 make test
 ```
 
-The test suite covers all API endpoints and includes tests for:
+The test suite covers:
 - Invoice creation
 - Invoice counts
 - Customer queries
 - Year queries
 - Month queries
+- Authentication and authorization
 - HTTP error code handling
 
 ## Limitations
 
-- The application is designed for demonstration purposes and may not be suitable for production use.
-- The API endpoints are hosted within the same domain as the web application, which might not scale well for larger systems.
-- The application currently uses SQLite for simplicity.
+- The application is designed for demonstration purposes, it is not meant to be used in a production environment
