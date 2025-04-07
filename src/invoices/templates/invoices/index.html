@@ -1,4 +1,6 @@
 {% load static %}
+{% load humanize %} 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -52,11 +54,11 @@
             <ul class="tree-view">
               <span class="invoices-count">Total invoices: {{ source_revenue.total_invoices }}</span>
               <span class="invoices-info-box">
-                Total invoices amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.total_adjusted_gross_value|floatformat:2 }} {{ source_revenue.currency_code }}</span>
+                Total invoices amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.total_adjusted_gross_value|floatformat:2|intcomma }} {{ source_revenue.currency_code }}</span>
                 <br>
-                Available advance amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.available_advance|floatformat:2 }} {{ source_revenue.currency_code }}</span>
+                Available advance amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.available_advance|floatformat:2|intcomma }} {{ source_revenue.currency_code }}</span>
                 <br>
-                Monthly fee amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.monthly_fee_amount|floatformat:2 }} {{ source_revenue.currency_code }}</span>
+                Monthly fee amount:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="underline">{{ source_revenue.monthly_fee_amount|floatformat:2|intcomma }} {{ source_revenue.currency_code }}</span>
                 <br>
               </span>
             </ul>
