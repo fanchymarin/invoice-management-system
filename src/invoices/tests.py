@@ -177,7 +177,6 @@ class InvoiceTestCase(TestCase):
 							"total_invoices": 2,
 							"monthly_haircut_percent": 7.5,
 							"total_advance_fee": 0.60,
-							"monthly_advance_duration": 30,
 							"available_advance": 138.75,
 							'monthly_fee_amount': 0.83
 
@@ -185,7 +184,6 @@ class InvoiceTestCase(TestCase):
 							# Total Adjusted Gross Value = 100.0 + 50.0 = 150.0
 							# Monthly Haircut Percent = (5.0 + 10.0) / 2 = 7.5
 							# Monthly Advance Fee = 0.50 + 0.10 = 0.60
-							# Monthly Advance Duration = (30 + 30) / 2 = 30
 							# Available Advance = 150.0 - ((150.0 * 7.5) / 100) = 138.75
 							# Monthly Fee Amount = 138.75 * (0.60 / 100) = 0.83
 						}
@@ -205,7 +203,7 @@ class InvoiceTestCase(TestCase):
 
 		self.assertEqual(response.status_code, 404)
 
-	def test_user(self):
+	def test_user_valid_access(self):
 		credentials = base64.b64encode(b'Test Customer:1234').decode('utf-8')
 		response = self.client.get(
 			'/invoices/?customer_id=1', 
@@ -226,6 +224,22 @@ class InvoiceTestCase(TestCase):
 		)
 		self.assertEqual(response.status_code, 200)
 
+	def test_user_invalid_access(self):
+		credentials = base64.b64encode(b'Test Customer:1234').decode('utf-8')
+		response = self.client.get(
+			'/invoices/', 
+			HTTP_ACCEPT='application/json', 
+			HTTP_AUTHORIZATION=f'Basic {credentials}'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			{
+				"error": "Access denied"
+			}
+		)
+		self.assertEqual(response.status_code, 403)
+
 	def test_no_user_found(self):
 		credentials = base64.b64encode(b'admin:wrongpassword').decode('utf-8')
 		response = self.client.get(
@@ -236,19 +250,9 @@ class InvoiceTestCase(TestCase):
 
 		self.assertJSONEqual(
 			str(response.content, encoding='utf8'),
-			{"error": "Invalid credentials"}
-		)
-		self.assertEqual(response.status_code, 401)
-
-	def test_no_authentication(self):
-		response = self.client.get(
-			'/invoices/', 
-			HTTP_ACCEPT='application/json'
-		)
-
-		self.assertJSONEqual(
-			str(response.content, encoding='utf8'),
-			{"error": "Basic authentication required"}
+			{
+				"error": "Invalid credentials"
+			}
 		)
 		self.assertEqual(response.status_code, 401)
 
@@ -262,6 +266,22 @@ class InvoiceTestCase(TestCase):
 
 		self.assertJSONEqual(
 			str(response.content, encoding='utf8'),
-			{"error": "Access denied"}
+			{
+				"error": "Access denied"
+			}
 		)
 		self.assertEqual(response.status_code, 403)
+
+	def test_no_authentication(self):
+		response = self.client.get(
+			'/invoices/', 
+			HTTP_ACCEPT='application/json'
+		)
+
+		self.assertJSONEqual(
+			str(response.content, encoding='utf8'),
+			{
+				"error": "Basic authentication required"
+			}
+		)
+		self.assertEqual(response.status_code, 401)

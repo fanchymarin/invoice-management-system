@@ -59,7 +59,23 @@ This Invoice Management System is a Docker-containerized Django web application 
    cd invoice-management-system
    ```
 
+2. Populate the .env file
+   Some environment variables are required for the application to run. Create a `.env` file in the root directory and populate it with the following variables:
+
+   ```bash
+   # Sample .env file
+   DJANGO_PORT=8000
+   DJANGO_SUPERUSER_EMAIL=admin@example.com
+   DJANGO_SUPERUSER_PASSWORD=admin
+   DJANGO_SUPERUSER_USERNAME=admin
+   POSTGRES_DB=postgres
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_USERNAME=postgres
+   ```
+
+
 2. Start the application
+
    ```
    make up
    ```
@@ -70,8 +86,8 @@ This Invoice Management System is a Docker-containerized Django web application 
 
 The system comes with two types of users:
 - **Admin**: Can view all customers and their invoices
-  - Username: `admin`
-  - Password: `admin`
+  - Username: `<DJANGO_SUPERUSER_USERNAME>`
+  - Password: `<DJANGO_SUPERUSER_PASSWORD>`
 - **Customer users**: Can only view their own invoices
   - Username: `<customer name>`
   - Password: `1234`

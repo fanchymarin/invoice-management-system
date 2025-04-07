@@ -8,9 +8,6 @@ RESET = \033[0m
 PYTHON_BIN = python
 DUMP_FILE = dump.sql.postgres
 
-DJANGO_SUPERUSER_USERNAME = admin
-DJANGO_SUPERUSER_PASSWORD = admin
-
 define help_message =
 	@echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)"
 	@echo "$(BOLD)${1}$(RESET)"
@@ -45,9 +42,6 @@ setup: $(DUMP_FILE)
 	$(call help_message, "Dumping database...")
 	cat $(DUMP_FILE) | $(PYTHON_BIN) manage.py dbshell
 	$(call help_message, "Creating superuser...")
-	@export DJANGO_SUPERUSER_EMAIL=admin@example.com; \
-	export DJANGO_SUPERUSER_USERNAME=$(DJANGO_SUPERUSER_USERNAME); \
-	export DJANGO_SUPERUSER_PASSWORD=$(DJANGO_SUPERUSER_PASSWORD); \
 	$(PYTHON_BIN) manage.py createsuperuser --noinput || true
 	$(call help_message, "Creating users...")
 	cat create_users.py | $(PYTHON_BIN) manage.py shell
