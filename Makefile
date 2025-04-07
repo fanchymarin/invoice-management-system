@@ -12,6 +12,8 @@ define help_message =
 	@echo "$(BOLD)${1}$(RESET)"
 endef
 
+include .env
+
 all: list
 
 list:
@@ -28,14 +30,16 @@ list:
 	@echo
 
 up: build
-	$(call help_message, "Building and running the containerized  application...")
+	$(call help_message, "Running the containerized application...")
 	docker compose --project-name=${PROJECT_NAME} up -d
 	$(call help_message, "Waiting for application to be ready...")
 	@until docker compose --project-name=${PROJECT_NAME} exec django python manage.py check >/dev/null 2>&1; do \
-		echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)"; \
-		echo " $(BOLD)Starting application...$(RESET)"; \
-		sleep 2; \
+		echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)" ; \
+		echo " $(BOLD)Starting application...$(RESET)" ; \
+		sleep 2 ; \
 	done
+	$(call help_message, "Application is ready!")
+	$(call help_message, "You can access it at http://localhost:${DJANGO_PORT}")
 
 build:
 	$(call help_message, "Building the container image...")
