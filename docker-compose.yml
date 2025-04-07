@@ -1,5 +1,5 @@
 services:
-  db:
+  postgres:
     environment:
       PGUSER: postgres
       POSTGRES_PASSWORD: postgres
@@ -13,14 +13,14 @@ services:
     restart: always
     shm_size: 128mb
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
-  django-server:
+  django:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      db:
+      postgres:
         condition: service_healthy
     ports:
       - "8000:8000"
@@ -29,4 +29,4 @@ services:
       - ./src:/app
 
 volumes:
-  db-data:
+  postgres-data:

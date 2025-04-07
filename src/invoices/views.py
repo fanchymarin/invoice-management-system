@@ -75,7 +75,6 @@ def get_invoices_info(invoices_info, month_query):
                     total_adjusted_gross_value=Round(Sum('adjusted_gross_value'), 2, output_field=FloatField()),
                     monthly_haircut_percent=Round(Avg('haircut_percent'), 2, output_field=FloatField()),
                     total_advance_fee=Round(Sum('daily_advance_fee'), 2, output_field=FloatField()),
-                    monthly_advance_duration=Avg('advance_duration', output_field=IntegerField()),
                     available_advance=Round(
                         F('total_adjusted_gross_value') * (1 - F('monthly_haircut_percent') / 100), 2, output_field=FloatField()
                     ),
