@@ -33,9 +33,9 @@ up: build
 	$(call help_message, "Running the containerized application...")
 	docker compose --project-name=${PROJECT_NAME} up -d
 	$(call help_message, "Waiting for application to be ready...")
-	@until docker compose --project-name=${PROJECT_NAME} exec django python manage.py check >/dev/null 2>&1; do \
+	@until docker compose --project-name=${PROJECT_NAME} exec django curl -sSf "http://localhost:8000" >/dev/null 2>&1; do \
 		echo -n "$(YELLOW)$(BOLD)[Makefile]$(RESET)" ; \
-		echo " $(BOLD)Starting application...$(RESET)" ; \
+		echo " $(BOLD)...$(RESET)" ; \
 		sleep 2 ; \
 	done
 	$(call help_message, "Application is ready!")
