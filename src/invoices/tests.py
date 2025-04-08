@@ -171,21 +171,17 @@ class InvoiceTestCase(TestCase):
 					"month_name": "January",
 					"source_revenue_info": [
 						{
-							"revenue_source_name": "Test Source",
 							"currency_code": "USD",
-							"total_adjusted_gross_value": 150.0,
 							"total_invoices": 2,
-							"monthly_haircut_percent": 7.5,
-							"total_advance_fee": 0.60,
-							"available_advance": 138.75,
-							'monthly_fee_amount': 0.83
+							"available_advance": 140,
+							'monthly_fee_amount': 0.52,
+							"revenue_source_name": "Test Source",
+							"total_adjusted_gross_value": 150.0,
 
 							# Calculations:
 							# Total Adjusted Gross Value = 100.0 + 50.0 = 150.0
-							# Monthly Haircut Percent = (5.0 + 10.0) / 2 = 7.5
-							# Monthly Advance Fee = 0.50 + 0.10 = 0.60
-							# Available Advance = 150.0 - ((150.0 * 7.5) / 100) = 138.75
-							# Monthly Fee Amount = 138.75 * (0.60 / 100) = 0.83
+							# Available Advance = (100 * (1 - 5 / 100)) + (50 * (1 - 10 / 100)) = 95 + 45 = 140
+							# Monthly Fee Amount = (95 * (0.50 / 100)) + (45 * (0.10 / 100)) = 0.475 + 0.045 = 0.52
 						}
 					]
 				}

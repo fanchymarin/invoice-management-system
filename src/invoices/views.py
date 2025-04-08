@@ -1,4 +1,4 @@
-from django.db.models import Case, CharField, JSONField, Count, F, Value, When, Sum, Avg, FloatField, IntegerField
+from django.db.models import Case, CharField, JSONField, Count, F, Value, When, Sum, Avg, FloatField
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
@@ -73,13 +73,13 @@ def get_invoices_info(invoices_info, month_query):
                 .values('revenue_source_name', 'currency_code')
                 .annotate(
                     total_adjusted_gross_value=Round(Sum('adjusted_gross_value'), 2, output_field=FloatField()),
-                    monthly_haircut_percent=Round(Avg('haircut_percent'), 2, output_field=FloatField()),
-                    total_advance_fee=Round(Sum('daily_advance_fee'), 2, output_field=FloatField()),
                     available_advance=Round(
-                        F('total_adjusted_gross_value') * (1 - F('monthly_haircut_percent') / 100), 2, output_field=FloatField()
+                        Sum(F('adjusted_gross_value') * (1 - F('haircut_percent') / 100))
+                        , 2, output_field=FloatField()
                     ),
                     monthly_fee_amount=Round(
-                        F('available_advance') * (F('total_advance_fee') / 100), 2, output_field=FloatField()
+                        Sum(F('adjusted_gross_value') * (1 - F('haircut_percent') / 100) * (F('daily_advance_fee') / 100))
+                        , 2, output_field=FloatField()
                     ),
                     total_invoices=Count('id'),
                 )
