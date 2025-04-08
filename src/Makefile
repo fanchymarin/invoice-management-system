@@ -40,11 +40,11 @@ setup: $(DUMP_FILE)
 	$(PYTHON_BIN) manage.py makemigrations --noinput
 	$(PYTHON_BIN) manage.py migrate
 	$(call help_message, "Dumping database...")
-	cat $(DUMP_FILE) | $(PYTHON_BIN) manage.py dbshell
+	$(PYTHON_BIN) manage.py dbshell < $(DUMP_FILE)
 	$(call help_message, "Creating superuser...")
 	$(PYTHON_BIN) manage.py createsuperuser --noinput || true
 	$(call help_message, "Creating users...")
-	cat create_users.py | $(PYTHON_BIN) manage.py shell
+	$(PYTHON_BIN) manage.py shell < create_users.py
 
 shell: setup
 	$(call help_message, "Running python shell...")
